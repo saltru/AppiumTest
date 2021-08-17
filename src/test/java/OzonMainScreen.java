@@ -4,62 +4,79 @@ import io.appium.java_client.remote.MobileCapabilityType;
 import io.appium.java_client.touch.TapOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import org.openqa.selenium.By;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AppiumTest {
+public class OzonMainScreen {
+    private AndroidDriver driver;
+    private TouchAction touchAction;
 
-    public static void main(String[] args) throws MalformedURLException {
+    OzonMainScreen(AndroidDriver driver) {
+        this.driver = driver;
+        touchAction = new TouchAction(driver);
+    }
 
-        DesiredCapabilities cap = new DesiredCapabilities();
-        cap.setCapability(MobileCapabilityType.DEVICE_NAME, "HT75N0204016");
-        cap.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android"); //platformName
-        cap.setCapability(MobileCapabilityType.PLATFORM_VERSION, "10.0"); //platformVersion
+    private TouchAction getLastAction() {
+        return this.touchAction;
+    }
 
-
-        cap.setCapability("appPackage","ru.ozon.app.android");
-        cap.setCapability("appActivity","ru.ozon.app.android.ui.start.PreStartActivity");
-
-        AndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), cap);
-
-        /*
-        TouchAction touchAction = new TouchAction(driver);
-
-        touchAction.tap(TapOptions.tapOptions()
-                .withElement(ElementOption.element(driver.findElement(By
-                        .id("ru.ozon.app.android:id/menu_catalog")))))
-                .perform();
-        touchAction.tap(TapOptions.tapOptions()
-                .withElement(ElementOption.element(driver.findElement(By
-                        .id("ru.ozon.app.android:id/menu_cart")))))
-                .perform();
-        touchAction.tap(TapOptions.tapOptions()
-                .withElement(ElementOption.element(driver.findElement(By
-                        .id("ru.ozon.app.android:id/menu_favorites")))))
-                .perform();
-        touchAction.tap(TapOptions.tapOptions()
-                .withElement(ElementOption.element(driver.findElement(By
-                        .id("ru.ozon.app.android:id/menu_profile")))))
-                .perform();
+    public void tapMenuMain() {
         touchAction.tap(TapOptions.tapOptions()
                 .withElement(ElementOption.element(driver.findElement(By
                         .id("ru.ozon.app.android:id/menu_main")))))
                 .perform();
-        */
-
-        OzonMainScreen ozonMainScreen = new OzonMainScreen(driver);
-
-        /*
-        ozonMainScreen.tapMenuCatalog();
-        ozonMainScreen.tapMenuCart();
-        ozonMainScreen.tapMenuFavorites();
-        ozonMainScreen.tapMenuProfile();
-        ozonMainScreen.tapMenuMain();
-         */
-
-        ozonMainScreen.tapMenuCatalog();
-        ozonMainScreen.searchOzon("test");
-
     }
+
+    public void tapMenuCatalog() {
+        touchAction.tap(TapOptions.tapOptions()
+                .withElement(ElementOption.element(driver.findElement(By
+                        .id("ru.ozon.app.android:id/menu_catalog")))))
+                .perform();
+    }
+
+    public void tapMenuCart() {
+        touchAction.tap(TapOptions.tapOptions()
+                .withElement(ElementOption.element(driver.findElement(By
+                        .id("ru.ozon.app.android:id/menu_cart")))))
+                .perform();
+    }
+
+    public void tapMenuFavorites() {
+        touchAction.tap(TapOptions.tapOptions()
+                .withElement(ElementOption.element(driver.findElement(By
+                        .id("ru.ozon.app.android:id/menu_favorites")))))
+                .perform();
+    }
+
+    public void tapMenuProfile() {
+        touchAction.tap(TapOptions.tapOptions()
+                .withElement(ElementOption.element(driver.findElement(By
+                        .id("ru.ozon.app.android:id/menu_profile")))))
+                .perform();
+    }
+
+    public void searchOzon(String text) {
+        //Check if search field is available on the current screen
+        if (
+            driver.findElement(By.id("ru.ozon.app.android:id/menu_cart")).isSelected() ||
+            driver.findElement(By.id("ru.ozon.app.android:id/menu_profile")).isSelected()
+        )
+        {
+            //Switch to the main screen if not
+            tapMenuMain();
+        }
+
+        touchAction.tap(TapOptions.tapOptions()
+                .withElement(ElementOption.element(driver.findElement(By
+                        .id("ru.ozon.app.android:id/searchTv")))))
+                .perform();
+
+        Actions a = new Actions(driver);
+        a.sendKeys(text + "\n");
+        a.perform();
+    }
+
+
 }
